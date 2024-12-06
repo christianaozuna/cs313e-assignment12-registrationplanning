@@ -256,26 +256,30 @@ class Graph:
         
         post: returns True if there is a cycle and False otherwise.
         """
-        def dfs(visited, vertex, current):
-            current.enqueue(vertex)
-            for neighbor in vertex.neighbors:
-                if neighbor in current:
-                    return True
-                if neighbor not in current:
-                    if dfs(visited, vertex, current):
-                        return True
-            current.dequeue()
-            visited.enqueue(vertex)
-            return False
-        
-        visited = Queue()
-        current = Queue()
+        # defining recursive function
+        def dfs(vertex, visited, stack):
+            visited[vertex] = True
+            stack[vertex] = True
 
-        for vertex in self.vertices:
-            if vertex not in visited:
-                if dfs(visited, vertex, current):
+            for adjacent in self.get_adjacent_vertices(vertex):
+                if not visited[adjacent]:
+                    if dfs(adjacent, visited, stack):
+                        return True
+                elif stack[adjacent]:
                     return True
-            
+
+            stack[vertex] = False
+            return False
+
+        num_vertices = len(self.vertices)
+        visited = [False] * num_vertices
+        stack = [False] * num_vertices
+
+        for vertex in range(num_vertices):
+            if not visited[vertex]:
+                if dfs(vertex, visited, stack):
+                    return True
+
         return False
 
     # TODO: Modify this method. You may delete this comment when you are done.
