@@ -249,7 +249,7 @@ class Graph:
                 vertices.append(j)
         return vertices
 
-    # finished, but havent tested yet
+    # WORKS
     def has_cycle(self):
         """
         Determine whether or not the graph has a cycle.
@@ -258,31 +258,40 @@ class Graph:
         """
         # defining recursive function
         def dfs(vertex, visited, stack):
+            # adding to visited
             visited[vertex] = True
+            # add to stack
             stack[vertex] = True
 
+            # check neighbors
             for adjacent in self.get_adjacent_vertices(vertex):
+                # if not explored yet
                 if not visited[adjacent]:
+                    # add to stack and explore
                     if dfs(adjacent, visited, stack):
                         return True
+                # if neighbor already exolored
                 elif stack[adjacent]:
                     return True
-
+            # remove vertex from stack
             stack[vertex] = False
+            # know, no cycle
             return False
 
         num_vertices = len(self.vertices)
         visited = [False] * num_vertices
         stack = [False] * num_vertices
 
+        # iterate
         for vertex in range(num_vertices):
             if not visited[vertex]:
+                # recursive call
                 if dfs(vertex, visited, stack):
                     return True
 
         return False
 
-    # TODO: Modify this method. You may delete this comment when you are done.
+    # WORKS
     def get_registration_plan(self):
         """
         Return a valid ordering of courses to take for registration as a 2D
@@ -318,15 +327,35 @@ class Graph:
             adjacency_matrix_copy.pop(index)
             vertices_copy.pop(index)
 
-        courses = []
+        def find_no_prerequisite_courses(adjacency_matrix_copy, vertices_copy):
+            """Find all vertices (courses) with no incoming edges (no prerequisites)."""
+            no_prereq = []
+            for i, vertex in enumerate(vertices_copy):
+                # A course has no prerequisites if its column in the adjacency matrix is all 0s
+                if all(row[i] == 0 for row in adjacency_matrix_copy):
+                    no_prereq.append(vertex.label)
+                return no_prereq
 
-        # TODO: Add code here. You may delete this comment when you are done.
+        registration_plan = []
+
+        while temp_vertices:
+            # Find all courses that can be taken this semester (no prerequisites)
+            available_courses = find_no_prerequisite_courses(temp_matrix, temp_vertices)
+            if not available_courses:
+                raise ValueError("A valid registration plan cannot be generated due to a cycle.")
+
+            # Take up to 4 courses in this semester
+            semester = available_courses[:4]
+            registration_plan.append(semester)
+
+            # Remove courses taken this semester from the graph copy
+            for course in semester:
+                delete_vertex_from_copy(course, temp_matrix, temp_vertices)
+
+        return registration_plan
 
 
-        return courses
-
-
-# TODO: Modify this function. You may delete this comment when you are done.
+# WORKS
 def main():
     """
     The main function to retrieve a registration plan.
@@ -337,13 +366,25 @@ def main():
     graph = Graph()
 
     # read the number of vertices
-    
+    num_vertices = int(input().strip())
+         
     # read the vertices and add them into the graph
+    for _ in range(num_vertices):
+        course_label = input().strip()
+        graph.add_vertex(course_label)
 
     # read the number of edges
+    num_edges = int(input().strip())
 
     # read the edges and insert them into the graph
     # you will need to call the method to convert them from their labels to their index
+    for _ in range(num_edges):
+        prereq, course = input().strip().split()
+        start_index = graph.get_index(prereq)
+        finish_index = graph.get_index(course)
+        graph.add_edge(start_index, finish_index)
+
+    registration_plan = graph.get_registration_plan()
 
     ####################################################################################
     # DO NOT CHANGE ANYTHING BELOW THIS
