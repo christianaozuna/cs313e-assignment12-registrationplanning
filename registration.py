@@ -273,6 +273,7 @@ class Graph:
                 # if neighbor already exolored
                 elif stack[adjacent]:
                     return True
+                
             # remove vertex from stack
             stack[vertex] = False
             # know, no cycle
@@ -327,32 +328,28 @@ class Graph:
             adjacency_matrix_copy.pop(index)
             vertices_copy.pop(index)
 
-        def find_no_prerequisite_courses(adjacency_matrix_copy, vertices_copy):
-            """Find all vertices (courses) with no incoming edges (no prerequisites)."""
-            no_prereq = []
-            for i, vertex in enumerate(vertices_copy):
-                # A course has no prerequisites if its column in the adjacency matrix is all 0s
-                if all(row[i] == 0 for row in adjacency_matrix_copy):
-                    no_prereq.append(vertex.label)
-                return no_prereq
-
-        registration_plan = []
+        courses = []
 
         while temp_vertices:
-            # Find all courses that can be taken this semester (no prerequisites)
-            available_courses = find_no_prerequisite_courses(temp_matrix, temp_vertices)
-            if not available_courses:
-                raise ValueError("A valid registration plan cannot be generated due to a cycle.")
+            semester_courses = []
+        
+            # finding vertices w no incoming edges
+            for i, vertex in enumerate(temp_vertices):
+                # no prereq
+                if all(temp_matrix[j][i] == 0 for j in range(len(temp_vertices))):
+                    semester_courses.append(vertex.label)
 
-            # Take up to 4 courses in this semester
-            semester = available_courses[:4]
-            registration_plan.append(semester)
+            # only 4 courses per sem
+            semester_courses = semester_courses[:4]
 
-            # Remove courses taken this semester from the graph copy
-            for course in semester:
-                delete_vertex_from_copy(course, temp_matrix, temp_vertices)
+            # add to plan
+            courses.append(semester_courses)
 
-        return registration_plan
+            # Remove the courses from the graph (delete them from both adjacency matrix and vertices list)
+            for course_label in semester_courses:
+                delete_vertex_from_copy(course_label, temp_matrix, temp_vertices)
+
+        return courses
 
 
 # WORKS
@@ -367,7 +364,7 @@ def main():
 
     # read the number of vertices
     num_vertices = int(input().strip())
-         
+
     # read the vertices and add them into the graph
     for _ in range(num_vertices):
         course_label = input().strip()
@@ -383,8 +380,6 @@ def main():
         start_index = graph.get_index(prereq)
         finish_index = graph.get_index(course)
         graph.add_edge(start_index, finish_index)
-
-    registration_plan = graph.get_registration_plan()
 
     ####################################################################################
     # DO NOT CHANGE ANYTHING BELOW THIS
