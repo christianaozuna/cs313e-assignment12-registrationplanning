@@ -15,10 +15,6 @@ UT EID 1: cmo2388
 UT EID 2: jan3557
 """
 
-# TODO: Delete this import if you choose not to use it. Delete this comment when you are done.
-import sys
-
-
 class Node:
     """
     Represents a node in a singly linked list.
@@ -41,26 +37,40 @@ class Node:
 
 
 class StackError(Exception):
-    pass
+    """
+    Stack error.
+    """
 
 
 class Stack:
+    """
+    Stack class
+    """
     def __init__(self):
         self._top = None
         self._size = 0
 
     def peek(self):
+        """
+        Peek from stack.
+        """
         if self.is_empty():
             raise StackError("Peek from empty stack.")
         return self._top.data
 
     def push(self, item):
+        """
+        Push to stack.
+        """
         new_node = Node(item)
         new_node.next = self._top
         self._top = new_node
         self._size += 1
 
     def pop(self):
+        """
+        Pop from stack.
+        """
         if self.is_empty():
             raise StackError("Pop from empty stack.")
         removed_data = self._top.data
@@ -69,14 +79,22 @@ class Stack:
         return removed_data
 
     def is_empty(self):
+        """
+        Check if stack is empty.
+        """
         return self._top is None
 
     def size(self):
+        """
+        Return size of stack.
+        """
         return self._size
 
 
 class QueueError(Exception):
-    pass
+    """"
+    Queue error.
+    """
 
 
 class Queue:
@@ -273,7 +291,7 @@ class Graph:
                 # if neighbor already exolored
                 elif stack[adjacent]:
                     return True
-                
+
             # remove vertex from stack
             stack[vertex] = False
             # know, no cycle
@@ -332,7 +350,7 @@ class Graph:
 
         while temp_vertices:
             semester_courses = []
-        
+
             # finding vertices w no incoming edges
             for i, vertex in enumerate(temp_vertices):
                 # no prereq
@@ -345,7 +363,8 @@ class Graph:
             # add to plan
             courses.append(semester_courses)
 
-            # Remove the courses from the graph (delete them from both adjacency matrix and vertices list)
+            # Remove the courses from the graph (delete them from both adjacency matrix and
+            # vertices list)
             for course_label in semester_courses:
                 delete_vertex_from_copy(course_label, temp_matrix, temp_vertices)
 
